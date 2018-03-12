@@ -25,6 +25,7 @@
 
 <script>
 import {coerce, delayer, getJSON} from './utils/utils.js'
+import axios from 'axios';
 
 let Vue = window.Vue
 const _DELAY_ = 200
@@ -127,10 +128,22 @@ export default {
       if (this.async) this.query()
     },
     query: delayer(function () {
-      getJSON(this.async + this.value).then(data => {
-        this.items = (this.key ? data[this.key] : data).slice(0, this.limit)
-        this.showDropdown = this.items.length
-      })
+      let urlReq = this.async+this.value;
+      let url = urlReq.substring(1,urlReq.indexOf('?'));
+      let paramStr = urlReq.substring(urlReq.indexOf('?')+1,urlReq.length);
+      let arrs = paramStr.split('&');
+      let params = {};
+      for(let i=0;i<arrs.length;i++){
+        let item = arrs[i];
+        if (item.indexOf('=')>0){
+          params[item.split('=')[0]]=item.split('=')[1];
+        }
+      }
+      let self = this
+      $.getJSON(url,params,function(data){
+        self.items = (self.key ? data[self.key] : data).slice(0, self.limit)
+        self.showDropdown = self.items.length
+      });
     }, 'delay', _DELAY_),
     reset () {
       this.items = []
