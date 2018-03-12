@@ -129,7 +129,7 @@ export default {
     },
     query: delayer(function () {
       let urlReq = this.async+this.value;
-      let url = urlReq.substring(1,urlReq.indexOf('?'));
+      let url = urlReq.substring(0,urlReq.indexOf('?'));
       let paramStr = urlReq.substring(urlReq.indexOf('?')+1,urlReq.length);
       let arrs = paramStr.split('&');
       let params = {};
@@ -140,7 +140,7 @@ export default {
         }
       }
       let self = this
-      $.getJSON(url,params,function(data){
+      $.post(url,params,function(data){
         self.items = (self.key ? data[self.key] : data).slice(0, self.limit)
         self.showDropdown = self.items.length
       });
